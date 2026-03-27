@@ -1,31 +1,54 @@
 # Sistem Penilaian Kerusakan Bangunan Gedung (SPKBG)
 
-Aplikasi web profesional untuk penilaian kerusakan bangunan gedung sesuai standar KemenPU.
+[![Deploy to GitHub Pages](https://github.com/bangunanpuprgarutkab/spkbg/actions/workflows/deploy.yml/badge.svg)](https://github.com/bangunanpuprgarutkab/spkbg/actions/workflows/deploy.yml)
+
+Aplikasi web profesional untuk penilaian kerusakan bangunan gedung sesuai standar KemenPU (Kementerian Pekerjaan Umum dan Perumahan Rakyat).
+
+🌐 **Live Demo**: https://bangunanpuprgarutkab.github.io/spkbg/
+
+---
 
 ## 🎯 Fitur Utama
 
-- **Template-Driven Assessment**: Menggunakan template Excel resmi KemenPU
-- **Workflow Management**: Alur kerja lengkap dari disposisi hingga approval
-- **Perhitungan Otomatis**: Sistem perhitungan kerusakan sesuai regulasi
-- **TTE (Tanda Tangan Elektronik)**: Digital signature untuk approval
-- **Google Integration**: Upload ke Drive, sync ke Sheets, generate Docs
-- **Real-time Notifications**: Notifikasi status dan approval
+- **📋 Template-Driven Assessment**: Menggunakan template Excel resmi KemenPU sebagai single source of truth
+- **🔄 Workflow Management**: Alur kerja lengkap 7 tahap (disposisi → persiapan → survey → analisis → penilaian → diperiksa → disetujui)
+- **🧮 Perhitungan Otomatis**: Sistem perhitungan kerusakan sesuai regulasi KemenPU dengan klasifikasi 1-7
+- **✍️ TTE (Tanda Tangan Elektronik)**: Digital signature untuk approval final
+- **☁️ Google Integration**: Upload ke Drive, sync ke Sheets, generate Docs laporan
+- **🔔 Real-time Notifications**: Notifikasi status dan approval via Supabase Realtime
+- **🤖 AI Crack Detection**: Deteksi retak otomatis menggunakan TensorFlow.js / Python YOLO
+- **🗺️ GIS & Drone Survey**: Pemetaan kerusakan dengan integrasi peta dan drone
+
+---
 
 ## 🏗️ Tech Stack
 
-- **Frontend**: React 18 + TypeScript + Vite + TailwindCSS
-- **State Management**: Zustand dengan persistensi
-- **Forms**: React Hook Form + Zod validation
-- **Backend**: Supabase (PostgreSQL + Auth + Storage + Realtime)
-- **Excel Engine**: SheetJS (xlsx) dengan template mapping
-- **Google API**: OAuth 2.0, Drive API, Sheets API, Docs API
+| Layer | Teknologi |
+|-------|-----------|
+| **Frontend** | React 18 + TypeScript + Vite |
+| **Styling** | TailwindCSS + Lucide Icons |
+| **State Management** | Zustand dengan persistensi |
+| **Forms** | React Hook Form + Zod validation |
+| **Backend** | Supabase (PostgreSQL + Auth + Storage + Realtime) |
+| **Excel Engine** | SheetJS (xlsx) dengan template mapping |
+| **AI/ML** | TensorFlow.js + Python FastAPI (YOLO) |
+| **GIS** | Leaflet + React-Leaflet |
+| **Charts** | Recharts |
+
+---
 
 ## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20+
+- npm atau yarn
+- Akun Supabase (gratis)
+- Akun Google Cloud (untuk Google integration, opsional)
 
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/spkbg.git
+git clone https://github.com/bangunanpuprgarutkab/spkbg.git
 cd spkbg
 ```
 
@@ -37,263 +60,417 @@ npm install
 
 ### 3. Setup Environment Variables
 
-Copy `.env.example` ke `.env` dan isi:
+Copy `.env.example` ke `.env`:
 
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_GOOGLE_CLIENT_ID=your_google_client_id
-VITE_GOOGLE_API_KEY=your_google_api_key
+```bash
+cp .env.example .env
 ```
 
-### 4. Setup Supabase
+Isi dengan konfigurasi Anda:
+
+```env
+# Supabase Configuration
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+
+# Google Integration (Opsional)
+VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+VITE_GOOGLE_API_KEY=your-api-key
+
+# AI Services (Opsional)
+VITE_AI_API_URL=http://localhost:8000
+
+# App Configuration
+VITE_APP_NAME=SPKBG
+VITE_APP_VERSION=1.0.0
+```
+
+### 4. Setup Supabase Database
 
 1. Buat project di [Supabase](https://supabase.com)
-2. Jalankan SQL migrations di folder `supabase/migrations/`
-3. Enable RLS policies
-4. Setup Storage buckets: `templates`, `exports`, `signatures`
+2. Buka **SQL Editor** di dashboard Supabase
+3. Copy seluruh isi file `supabase/migrations/001_initial_schema.sql`
+4. Paste dan jalankan (Run)
+5. Setup **Storage buckets**: `survey-attachments`, `signatures`
+6. Enable **Email provider** di Authentication → Providers
 
-### 5. Setup Google Cloud
+📖 [Panduan lengkap setup Supabase](supabase/SETUP.md)
 
-1. Buat project di [Google Cloud Console](https://console.cloud.google.com)
-2. Enable APIs: Drive API, Sheets API, Docs API
-3. Create OAuth 2.0 credentials
-4. Add authorized domains
-
-### 6. Run Development Server
+### 5. Run Development Server
 
 ```bash
 npm run dev
 ```
 
-### 7. Build for Production
+Aplikasi akan berjalan di `http://localhost:5173`
+
+### 6. Build for Production
 
 ```bash
 npm run build
 ```
 
+---
+
 ## 📁 Project Structure
 
 ```
-/src
-  /components      # UI Components
-  /pages           # Page components
-  /layouts         # Layout components
-  /services        # API services (Supabase, Google)
-  /stores          # Zustand stores
-  /modules         # Excel Engine & Template Mapping
-  /utils           # Utility functions
-  /types           # TypeScript types
-  /styles          # Global styles
-/supabase
-  /migrations      # Database migrations
-  /functions       # Edge functions
-/docs              # Documentation
-/public
-  /templates       # Excel templates
-/.github
-  /workflows       # CI/CD workflows
+spkbg/
+├── src/
+│   ├── components/          # UI Components (React)
+│   │   ├── common/         # Shared components
+│   │   ├── dashboard/      # Dashboard components
+│   │   ├── survey/         # Survey form components
+│   │   └── workflow/       # Workflow components
+│   ├── pages/              # Page components (routes)
+│   ├── layouts/            # Layout wrappers
+│   ├── services/           # API services
+│   │   ├── supabase/       # Supabase client & auth
+│   │   ├── google/         # Google API integration
+│   │   └── ai/             # AI service client
+│   ├── stores/             # Zustand state stores
+│   ├── modules/            # Business logic engines
+│   │   ├── excel/          # Excel export engine
+│   │   ├── ai/             # AI detection logic
+│   │   ├── rab/            # RAB calculation engine
+│   │   └── template/       # Template mapping engine
+│   ├── utils/              # Utility functions
+│   ├── types/              # TypeScript type definitions
+│   └── styles/             # Global styles
+├── supabase/
+│   ├── migrations/           # Database SQL migrations
+│   └── SETUP.md             # Setup instructions
+├── .github/
+│   └── workflows/            # GitHub Actions CI/CD
+├── public/                   # Static assets
+├── .env.example             # Environment template
+├── vite.config.ts           # Vite configuration
+├── tailwind.config.js       # TailwindCSS config
+└── package.json             # Dependencies
 ```
 
-## ⚙️ Konfigurasi
+---
 
-### Supabase Environment Variables
+## ⚙️ Konfigurasi Lengkap
 
+### Supabase Setup
+
+**Environment Variables:**
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
 ```
 
-### Google API Configuration
+**Database Features:**
+- ✅ Row Level Security (RLS) enabled
+- ✅ Auto-calculation triggers
+- ✅ Workflow audit logging
+- ✅ Real-time subscriptions
 
+### Google Cloud Setup (Opsional)
+
+**Enable APIs:**
+- Google Drive API
+- Google Sheets API
+- Google Docs API
+
+**Environment Variables:**
 ```env
-VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-VITE_GOOGLE_API_KEY=your-api-key
+VITE_GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
+VITE_GOOGLE_API_KEY=AIzaSy...
 ```
 
-### Vite Base Path (untuk GitHub Pages)
+### Vite Configuration untuk GitHub Pages
 
-Edit `vite.config.ts`:
+File `vite.config.ts` sudah dikonfigurasi untuk GitHub Pages:
 
-```ts
+```typescript
 export default defineConfig({
-  base: '/your-repo-name/', // untuk GitHub Pages
+  base: '/spkbg/',  // Sesuai nama repository
   // ...
 })
 ```
+
+---
 
 ## 📊 Database Schema
 
 ### Core Tables
 
-- `users`: Data pengguna
-- `projects`: Data proyek/bangunan
-- `surveys`: Data survey
-- `components`: Data komponen bangunan
-- `results`: Hasil perhitungan kerusakan
-- `workflow_logs`: Log perubahan status
-- `signatures`: Data tanda tangan
-- `notifications`: Notifikasi real-time
+| Table | Deskripsi |
+|-------|-----------|
+| `users` | Profil pengguna (extends auth.users) |
+| `projects` | Data proyek/bangunan yang dinilai |
+| `surveys` | Data survey lapangan |
+| `components` | Komponen bangunan dan nilai kerusakan |
+| `results` | Hasil perhitungan akhir |
+| `workflow_logs` | Audit trail perubahan status |
+| `signatures` | Data tanda tangan digital (TTE) |
+| `templates` | Template Excel yang digunakan |
+| `notifications` | Notifikasi real-time |
 
 ### Enums
 
-- `user_role`: admin, surveyor, verifikator, approver
-- `workflow_status`: disposisi → persiapan → survey → analisis → penilaian → diperiksa → disetujui
-- `damage_category`: ringan (≤30%), sedang (30-45%), berat (>45%)
+```sql
+user_role:          admin | surveyor | verifikator | approver
+workflow_status:    disposisi | persiapan | survey | analisis | penilaian | diperiksa | disetujui
+damage_category:    ringan (≤30%) | sedang (30-45%) | berat (>45%)
+component_category: struktur | arsitektur | utilitas | finishing
+```
+
+### Functions
+
+- `calculate_component_damage()` - Auto-calculate nilai hasil
+- `calculate_project_damage()` - Total kerusakan project
+- `check_critical_damage()` - Safety check (tahap 1)
+- `get_damage_value()` - Convert klasifikasi 1-7 ke nilai
+
+---
 
 ## 🔐 Security
 
 ### Row Level Security (RLS)
 
-Semua tabel menggunakan RLS:
-
-- Surveyor: hanya lihat/edit survey sendiri
-- Verifikator: lihat semua, edit status
-- Approver: lihat semua, approve + sign
-- Admin: full access
+| Role | Permissions |
+|------|-------------|
+| **Surveyor** | CRUD survey sendiri, view components |
+| **Verifikator** | View all, update status, edit analysis |
+| **Approver** | View all, approve results, TTE |
+| **Admin** | Full access |
 
 ### Authentication
+- Supabase Auth dengan JWT tokens
+- Auto session refresh
+- Role-based route protection
 
-- Supabase Auth dengan JWT
-- Session management otomatis
-- Protected routes dengan role-based access
+---
 
-## 📈 Workflow
+## 🔄 Workflow Diagram
 
 ```
-Disposisi → Persiapan → Survey → Analisis → Penilaian → Diperiksa → Disetujui
-   ↑                                                           ↓
-   └────────────────────── Ditolak ←──────────────────────────┘
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Disposisi  │────▶│ Persiapan   │────▶│   Survey    │
+└─────────────┘     └─────────────┘     └──────┬──────┘
+      ▲                                          │
+      │         ┌─────────────┐                  │
+      └─────────│  Ditolak    │◀─────────────────┤
+                └─────────────┘                  ▼
+                                          ┌─────────────┐
+                                          │  Analisis   │
+                                          └──────┬──────┘
+                                                 │
+                                                 ▼
+                                          ┌─────────────┐
+                                          │  Penilaian  │
+                                          └──────┬──────┘
+                                                 │
+                                                 ▼
+                                          ┌─────────────┐
+                                          │  Diperiksa  │
+                                          └──────┬──────┘
+                                                 │
+                                                 ▼
+                                          ┌─────────────┐
+                                          │  Disetujui  │
+                                          └─────────────┘
 ```
 
-## 📤 Excel Export
+---
 
-Sistem menggunakan template-driven approach:
+## 📤 Excel Export System
 
-1. **Template Parser**: Membaca struktur Excel template
-2. **Cell Mapping**: Mapping JSON path → Cell address
-3. **Export Engine**: Isi data ke template asli
-4. **Output**: File Excel IDENTIK dengan template
+### Template-Driven Architecture
+
+1. **Template Parser** (`modules/template/parser.ts`)
+   - Membaca struktur Excel template asli
+   - Extract metadata dan formulas
+
+2. **Cell Mapping** (`modules/template/mapping.ts`)
+   - JSON path → Cell address mapping
+   - Dynamic field generation
+
+3. **Export Engine** (`modules/excel/export.ts`)
+   - Isi data ke template asli
+   - Preserve formulas & formatting
+   - Identik dengan template KemenPU
+
+### Export Format
+
+- **Input**: Template Excel KemenPU + Data JSON
+- **Process**: Mapping → Fill → Calculate
+- **Output**: File Excel IDENTIK template (100% compatible)
+
+---
 
 ## ☁️ Google Integration
 
-### Fitur
+### Fitur yang Tersedia
 
-- **Drive**: Upload export ke Google Drive
-- **Sheets**: Convert Excel → Google Sheets
-- **Docs**: Generate laporan otomatis
+| Fitur | Deskripsi |
+|-------|-----------|
+| **Drive Upload** | Export hasil ke Google Drive |
+| **Sheets Sync** | Convert Excel → Google Sheets |
+| **Docs Generate** | Generate laporan otomatis |
+| **OAuth Login** | Login dengan Google account |
 
 ### Setup
 
-1. Enable Google APIs di Cloud Console
-2. Configure OAuth consent screen
-3. Add JavaScript origins
-4. Set environment variables
+1. Buat project di [Google Cloud Console](https://console.cloud.google.com)
+2. Enable APIs: Drive, Sheets, Docs
+3. Configure OAuth consent screen
+4. Add authorized JavaScript origins:
+   - `http://localhost:5173` (dev)
+   - `https://bangunanpuprgarutkab.github.io` (prod)
+5. Copy Client ID dan API Key ke environment variables
 
-## 🧪 Testing
+---
 
-### Manual Testing Checklist
+## 🤖 AI Crack Detection
 
-- [ ] Login/logout berfungsi
-- [ ] CRUD project & survey
-- [ ] Input komponen & perhitungan
-- [ ] Workflow transitions
-- [ ] Approval dengan TTE
-- [ ] Export Excel format IDENTIK
-- [ ] Upload ke Google Drive
-- [ ] Sync ke Google Sheets
-- [ ] Real-time notifications
+### Cara Kerja
 
-## 🧠 AI Service Setup (Crack Detection)
+**Tahap 1 - Safety Check (Rules-based):**
+- Deteksi: kolom patah, pondasi bergeser, struktur runtuh
+- Result: Auto-flag critical damage
 
-### Prerequisites
+**Tahap 2 - AI Detection (Machine Learning):**
+- Input: Foto kerusakan
+- Model: TensorFlow.js / Python YOLO
+- Output: Bounding box + confidence score
+- Klasifikasi: Retak, spalling, korosi, dll
 
-- Python 3.9+
-- CUDA (optional, for GPU acceleration)
-
-### Installation
+### Setup AI Service (Opsional)
 
 ```bash
-# Navigate to AI service
+# Python backend (opsional untuk GPU acceleration)
 cd ai-service
-
-# Create virtual environment
 python -m venv venv
-
-# Activate (Linux/Mac)
-source venv/bin/activate
-
-# Activate (Windows)
-venv\Scripts\activate
-
-# Install dependencies
+venv\Scripts\activate  # Windows
 pip install -r requirements.txt
-
-# Download or place your YOLO model
-mkdir -p model
-cp /path/to/best.pt model/best.pt
-
-# Configure environment
-cp .env.example .env
-
-# Run AI service
-python main.py
+python main.py  # Runs on http://localhost:8000
 ```
 
-### AI Service Endpoints
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /` | Health check |
-| `POST /detect` | Detect cracks in image |
-| `POST /detect-batch` | Batch detection |
-| `GET /model-info` | Model information |
-
-### Training Custom Model
-
-See [ai-service/MODEL_TRAINING.md](ai-service/MODEL_TRAINING.md) for training instructions.
+---
 
 ## 🚀 Deployment
 
-### GitHub Pages
+### GitHub Pages (Auto-deploy)
 
-1. Fork repository
-2. Enable GitHub Pages di Settings
-3. Set source: GitHub Actions
-4. Push ke main branch
-5. Workflow otomatis deploy
+✅ **Sudah dikonfigurasi!**
+
+Workflow: `.github/workflows/deploy.yml`
+
+**Trigger deploy:**
+```bash
+git push origin main
+```
+
+Atau manual trigger di tab **Actions** → **Run workflow**
+
+**URL:** https://bangunanpuprgarutkab.github.io/spkbg/
+
+### GitHub Secrets yang Harus Di-set
+
+Buka: Repository → Settings → Secrets and variables → Actions
+
+| Secret | Value |
+|--------|-------|
+| `VITE_SUPABASE_URL` | URL Supabase project |
+| `VITE_SUPABASE_ANON_KEY` | Anon key Supabase |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth Client ID |
+| `VITE_GOOGLE_API_KEY` | Google API Key |
 
 ### Manual Deployment
 
 ```bash
 npm run build
-# Upload dist/ ke hosting
+# Upload folder dist/ ke hosting static (Netlify, Vercel, dll)
 ```
+
+---
+
+## 🧪 Testing Checklist
+
+### Manual Testing
+
+- [ ] Login/logout dengan Supabase Auth
+- [ ] CRUD Project dan Survey
+- [ ] Input komponen dengan berbagai klasifikasi
+- [ ] Perhitungan otomatis kerusakan
+- [ ] Transisi workflow (semua status)
+- [ ] Approval dengan TTE
+- [ ] Export Excel format IDENTIK template
+- [ ] Upload ke Google Drive
+- [ ] Notifikasi real-time
+- [ ] AI crack detection (jika setup)
+
+### TypeScript Check
+
+```bash
+npm run type-check
+```
+
+### Build Check
+
+```bash
+npm run build
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Error: "Missing Supabase environment variables"
+**Solusi:** Pastikan `.env` file ada dan sudah diisi
+
+### Error: "Failed to load resource"
+**Solusi:** Check `base` path di `vite.config.ts` sesuai dengan repo name
+
+### Error: "RLS policy violation"
+**Solusi:** Pastikan user sudah login dan RLS policies sudah di-setup
+
+### Excel Export Error
+**Solusi:** Pastikan template file ada di `public/templates/`
+
+---
 
 ## 📝 Changelog
 
-### v1.0.0
-- Initial release
-- Full workflow support
-- Excel export IDENTIK template
-- Google integration
-- TTE support
+### v1.0.0 (Latest)
+- ✅ Production ready
+- ✅ Full workflow support (7 tahap)
+- ✅ Excel export IDENTIK template KemenPU
+- ✅ Google Drive/Sheets/Docs integration
+- ✅ TTE (Tanda Tangan Elektronik)
+- ✅ AI crack detection
+- ✅ Real-time notifications
+- ✅ GitHub Pages auto-deploy
 
-## 👥 Contributors
+---
 
-- Developer Team SPKBG
+## 👥 Tim Pengembang
+
+- **PUPR Kabupaten Garut** - Product Owner
+- **Development Team** - Engineering & Implementation
+
+---
 
 ## 📄 License
 
-MIT License - 2024 SPKBG Team
+MIT License - 2024 PUPR Kabupaten Garut
 
-## 📞 Support
+---
 
-Untuk bantuan dan pertanyaan:
-- Email: support@spkbg.id
-- GitHub Issues: [Issues Page](https://github.com/your-username/spkbg/issues)
+## 📞 Support & Kontribusi
+
+- 🐛 **Bug Report**: [GitHub Issues](https://github.com/bangunanpuprgarutkab/spkbg/issues)
+- 💡 **Feature Request**: Buat issue dengan label `enhancement`
+- 📧 **Email**: pupr@garutkab.go.id
 
 ---
 
 **SPKBG - Sistem Penilaian Kerusakan Bangunan Gedung**
+
 *Enterprise Engineering Application (GovTech Ready)*
+
+🇮🇩 Dikembangkan untuk Kementerian PUPR - Standar Penilaian Kerusakan Bangunan Gedung
