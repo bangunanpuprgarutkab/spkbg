@@ -46,6 +46,9 @@ function App() {
 
   return (
     <Routes>
+      {/* Root redirect to login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      
       {/* Public Routes */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
