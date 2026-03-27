@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
+  base: '/spkbg/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -37,6 +38,11 @@ export default defineConfig({
     },
   },
   define: {
-    'process.env': {},
+    'process.env': {
+      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
+      VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY,
+      VITE_GOOGLE_CLIENT_ID: process.env.VITE_GOOGLE_CLIENT_ID,
+      VITE_GOOGLE_API_KEY: process.env.VITE_GOOGLE_API_KEY,
+    },
   },
 })
