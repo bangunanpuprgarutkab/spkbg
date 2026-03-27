@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
-import { Building2 } from 'lucide-react'
 import { signIn } from '@/services/supabase/auth'
 import { useAuthStore } from '@/stores/authStore'
 
@@ -36,8 +35,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-government-green mb-4">
-            <Building2 className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-government-green mb-4">
+            <img src="/img/logo.png" alt="SPKBG Logo" className="w-16 h-16 object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">SPKBG</h1>
           <p className="text-gray-600 mt-1">Sistem Penilaian Kerusakan Bangunan Gedung</p>
