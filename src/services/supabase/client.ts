@@ -21,3 +21,42 @@ export const supabase = createClient(url, key, {
 })
 
 export type SupabaseClient = typeof supabase
+
+// Test koneksi Supabase
+export async function testSupabaseConnection(): Promise<{ success: boolean; message: string }> {
+  try {
+    // Cek health endpoint
+    const response = await fetch(`${url}/rest/v1/`, {
+      headers: {
+        'apikey': key,
+      },
+    })
+    
+    if (!response.ok) {
+      return { 
+        success: false, 
+        message: `HTTP Error: ${response.status} ${response.statusText}` 
+      }
+    }
+    
+    // Cek auth status
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
+    
+    if (authError) {
+      return { 
+        success: false, 
+        message: `Auth Error: ${authError.message}` 
+      }
+    }
+    
+    return { 
+      success: true, 
+      message: session ? 'Connected (Authenticated)' : 'Connected (Not authenticated)'
+    }
+  } catch (error) {
+    return { 
+      success: false, 
+      message: `Network Error: ${error instanceof Error ? error.message : 'Unknown error'}` 
+    }
+  }
+}
