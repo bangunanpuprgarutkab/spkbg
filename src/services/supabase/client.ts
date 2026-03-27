@@ -18,6 +18,11 @@ export const supabase = createClient(url, key, {
     autoRefreshToken: true,
     persistSession: true,
   },
+  global: {
+    headers: {
+      'apikey': key,
+    },
+  },
 })
 
 export type SupabaseClient = typeof supabase
